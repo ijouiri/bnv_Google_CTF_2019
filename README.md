@@ -47,7 +47,7 @@ hmm no declaration for the ailment message apparently the parser requires the de
   
   ![11](https://user-images.githubusercontent.com/44733558/83207485-3b6f7200-a14b-11ea-8133-c7bf5ee5deb6.PNG)
   
-  to test this i'll be using be septa which is a simple service that gives you a subdomain and keeps a log of all the requests made to that website quick and simple
+  to test this i'll be using beesepta which is a simple service that gives you a subdomain and keeps a log of all the requests made to that website quick and simple
   
   ![12](https://user-images.githubusercontent.com/44733558/83207552-60fc7b80-a14b-11ea-976f-fe8d09fa8bb2.PNG)
 
