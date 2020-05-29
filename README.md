@@ -43,13 +43,75 @@ hmm no declaration for the ailment message apparently the parser requires the de
 
 ![10](https://user-images.githubusercontent.com/44733558/83207445-1f6bd080-a14b-11ea-8378-f30f0afb24e5.PNG)
  
-  additionally the entity expansions are allowed as you can clearly see that our identity did expand which means it worked now let's see if we can make a request from the inside to the outside world or simply a request to a website of our choice
+additionally the entity expansions are allowed as you can clearly see that our identity did expand which means it worked now let's see if we can make a request from the inside to the outside world or simply a request to a website of our choice
   
-  ![11](https://user-images.githubusercontent.com/44733558/83207485-3b6f7200-a14b-11ea-8133-c7bf5ee5deb6.PNG)
+![11](https://user-images.githubusercontent.com/44733558/83207485-3b6f7200-a14b-11ea-8133-c7bf5ee5deb6.PNG)
   
-  to test this i'll be using beesepta which is a simple service that gives you a subdomain and keeps a log of all the requests made to that website quick and simple
+to test this i'll be using beesepta which is a simple service that gives you a subdomain and keeps a log of all the requests made to that website quick and simple
   
-  ![12](https://user-images.githubusercontent.com/44733558/83207552-60fc7b80-a14b-11ea-976f-fe8d09fa8bb2.PNG)
+![12](https://user-images.githubusercontent.com/44733558/83207552-60fc7b80-a14b-11ea-976f-fe8d09fa8bb2.PNG)
+  
+so let's go ahead and add an external entity to make the egress request or simply an external request but it seems like it has failed to load the external entity,  it seems like we're not allowed to load any external DTD
+    
+![13](https://user-images.githubusercontent.com/44733558/83208869-c1d98300-a14e-11ea-8e60-bef526d963b9.PNG)
+    
+but let's go ahead and try to load a file let's say etc/passwrd and see if we can get a different error
+
+![14](https://user-images.githubusercontent.com/44733558/83208519-d6694b80-a14d-11ea-9a7e-93fe6fa100ce.PNG)
+
+and we do interestingly we get a markup error which means that the file was loaded correctly but since it was not well formed XML file it broke
+
+![15](https://user-images.githubusercontent.com/44733558/83208530-db2dff80-a14d-11ea-92a2-00dcfad37a6f.PNG)
+
+so now we have a way to enumerate the file names so let's see if we could find a flag file let's go ahead and try for /flag and we get back the same output which means that flag is in route and then flag as a file and all we have to do is somehow read it but how
+
+![16](https://user-images.githubusercontent.com/44733558/83208533-dd905980-a14d-11ea-8b37-051a01cab09b.PNG)
+
+since we're not allowed to load the external DTD can we load the internal ones are there internal ones if there were I think we can load them because we were able to load the etc password and it broke but that was for a different reason so now we need to find an internal file which is a valid XML file that can be included and some how get the flag
+
+![17](https://user-images.githubusercontent.com/44733558/83208542-dff2b380-a14d-11ea-9564-7fc13027dfb6.PNG)
+
+exploiting xxe with local DTD files essentially we can use the entities defined inside the local DTD file but we need to define it before loading it completely because the XML processor will pick the fast one which is the one that we have defined it if you want more information on how this works read the actual blog post "https://mohemiv.com/all/exploiting-xxe-with-local-dtd-files/"
+
+![18](https://user-images.githubusercontent.com/44733558/83208547-e2550d80-a14d-11ea-9ecd-0ebe93c9d27c.PNG)
+
+in the block-post is mentioned that the Linux box might have a DTD file located in the
+/user/share/yelp /dtd/docbookx.dtd 
+and this file has an entity named ISOasma regardless we can use this to write the DTD code inside of it now let's craft the DTD cod
+ 
+![19](https://user-images.githubusercontent.com/44733558/83208551-e54ffe00-a14d-11ea-85b7-90506c11bf88.PNG)
+ 
+since we know that the input what we sent out for the example was a wrong filename and we got back the same file name in the response as an error this can be abused first we read the contents of the file that we want it could be the flag file it could be the etc/password then we can try to read another file but this time we're going to make sure that the second false name is the contents of the first file that we just read obviously this will give us an error because there was no file which has the name as the contents of the first file in the error we get back the name of the file we try to read which means we also get back the contents of the first file hence arbitrary file read via xxe using local DTD
+ 
+![20](https://user-images.githubusercontent.com/44733558/83208556-e719c180-a14d-11ea-9c00-dca835771dab.PNG)
+ 
+let's try this stage one is to read the proper file which we want to let's say etc/passwrd
+  
+![21](https://user-images.githubusercontent.com/44733558/83208560-eaad4880-a14d-11ea-9b1a-46b0ebda01e9.PNG)
+  
+and now let's try to read another file whose name is the contents of their etc/password
+  
+![22](https://user-images.githubusercontent.com/44733558/83208567-eda83900-a14d-11ea-92e2-36351b1d9dd9.PNG)
+
+now all that's left is to reference it down below finally we have to include DTD like this
+
+![23](https://user-images.githubusercontent.com/44733558/83208573-f00a9300-a14d-11ea-877d-3e77ecce8aee.PNG)
+
+one more thing since the DTD code has some XML breaking characters it's required to encode them like this
+
+![24](https://user-images.githubusercontent.com/44733558/83208576-f3058380-a14d-11ea-854b-6aa19dbafe59.PNG)
+
+awesome this looks fine let's go ahead and give this a shot
+
+![25](https://user-images.githubusercontent.com/44733558/83208583-f567dd80-a14d-11ea-9b15-1eca90f6b64d.PNG)
+
+and we got back the contents of the etc/passwrd now let's try to read the flag
+
+![26](https://user-images.githubusercontent.com/44733558/83208587-f862ce00-a14d-11ea-9371-9ac36cc4612a.PNG)
+
+the flag is in the root directory let's change the path to the flag and we can just remove the id entity since we know or need it now let's give this a shot and there we go we go back the flag
+
+![27](https://user-images.githubusercontent.com/44733558/83208589-fac52800-a14d-11ea-869a-3170120bd16b.PNG)
 
 
 
